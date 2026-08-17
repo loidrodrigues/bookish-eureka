@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.loidpadre.segundo.dto.UserRequestDto;
+import br.com.loidpadre.segundo.dto.UserResponseDto;
 import br.com.loidpadre.segundo.model.User;
 import br.com.loidpadre.segundo.service.UserService;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("/api")
@@ -26,10 +29,10 @@ public class UserController {
     }
 
     @PostMapping("/user")
-    public ResponseEntity<?> saveUser(@RequestBody User user) {
+    public ResponseEntity<?> saveUser(@RequestBody UserRequestDto requestDto) {
         try {
-            User usuarioSalvp = userService.saveUser(user.getName(), user.getEmail(), user.getSenha());
-            return ResponseEntity.status(HttpStatus.CREATED).body(usuarioSalvp);
+            UserResponseDto resposta = userService.saveUser(requestDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
 
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
@@ -38,21 +41,29 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<?> getUsers() {
-        try {
-            List<User> listadeUsuarios = userService.buscarTodos();
-            return ResponseEntity.ok(listadeUsuarios);
+    public ResponseEntity<List<UserResponseDto>> getUsers() {
 
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-        }
+        List<UserResponseDto> listadeUsuarios = userService.buscarTodos();
+        return ResponseEntity.ok(listadeUsuarios);
+
     }
 
     @GetMapping("/user/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
         try {
-            User user = userService.getOnUser(id);
+            UserResponseDto user = userService.getOnUser(id);
             return ResponseEntity.ok(user);
+
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+    }
+
+    @PutMapping("user/{id}")
+    public ResponseEntity<?> UpdateUser(@PathVariable Long id, @RequestBody UserRequestDto request) {
+        try {
+            UserResponseDto response = userService.EditeUser(id, request);
+            return ResponseEntity.ok(response);
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }

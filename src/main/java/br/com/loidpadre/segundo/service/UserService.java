@@ -3,6 +3,8 @@ package br.com.loidpadre.segundo.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
+import br.com.loidpadre.segundo.dto.UserRequestDto;
+import br.com.loidpadre.segundo.dto.UserResponseDto;
 import br.com.loidpadre.segundo.model.User;
 import br.com.loidpadre.segundo.repository.UserRepository;
 
@@ -15,21 +17,38 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User saveUser(String name, String email, String senha) {
+    public UserResponseDto saveUser(UserRequestDto request) {
 
-        if (!email.contains("@")) {
-            throw new IllegalArgumentException("O email informado é invalido");
+        if (!request.email().contains("@")) {
+            throw new IllegalArgumentException("O e-mail informado é inválido.");
         }
-        User user = new User(name, email, senha);
-        return userRepository.save(user);
+
+        // 2. CONVERSÃO DE ENTRADA (Request DTO -> Entidade)
+        // Transformamos o DTO da internet no objeto que o banco entende
+        User user = new User(request.nome(), request.email(), request.senha());
+
+        // 3. Salva no banco de dados e recebe o objeto com o ID gerado
+        User usuarioSalvo = userRepository.save(user);
+
+        // 4. CONVERSÃO DE SAÍDA (Entidade -> Response DTO)
+        // Pegamos o usuário salvo, tiramos a senha, e montamos o crachá de saída
+        return new UserResponseDto(usuarioSalvo.getId(), usuarioSalvo.getName(), usuarioSalvo.getEmail());
     }
 
-    public List<User> buscarTodos() {
-        return userRepository.findAll();
+    public List<UserResponseDto> buscarTodos() {
+        List<User> listaDeUsuarios = userRepository.findAll();
+
+        // faço um varredura na lista que veio do banco de dados, e passo o DTO, para
+        // mostrar so o necessario para o front
+        return listaDeUsuarios.stream().map(user -> new UserResponseDto(user.getId(), user.getName(),
+                user.getEmail())).toList();
     }
 
-    public User getOnUser(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Usuario nao encontrado"));
+    public UserResponseDto getOnUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário nao encontrado"));
+        return new UserResponseDto(user.getId(), user.getName(), user.getEmail());
+
     }
 
     public void deleteUser(Long id) {
@@ -38,5 +57,17 @@ public class UserService {
             throw new IllegalArgumentException("Usuário não encontrado");
         }
         userRepository.deleteById(id);
+    }
+
+    public UserResponseDto EditeUser(Long id, UserRequestDto request) {
+        User usuarioExistente = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+        usuarioExistente.setName(request.nome());
+        usuarioExistente.setEmail(request.email());
+        usuarioExistente.setSenha(request.senha());
+
+        User usuarioAtualizado = userRepository.save(usuarioExistente);
+        return new UserResponseDto(usuarioAtualizado.getId(), usuarioAtualizado.getName(),
+                usuarioAtualizado.getEmail());
     }
 }
