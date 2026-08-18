@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -16,6 +18,10 @@ public class Task {
     private String title;
     private String description;
     private boolean completed;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Task(String title, String description, boolean completed) {
 
@@ -46,6 +52,10 @@ public class Task {
 
     }
 
+    public User getUser() {
+        return this.user;
+    }
+
     // setters
 
     public void setId(Long id) {
@@ -62,6 +72,10 @@ public class Task {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
 }

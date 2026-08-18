@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import br.com.loidpadre.segundo.dto.TaskRequestDto;
 import br.com.loidpadre.segundo.dto.TaskResponseDto;
 import br.com.loidpadre.segundo.service.TaskService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
@@ -34,7 +36,7 @@ public class TaskController {
     }
 
     @PostMapping("/task")
-    public ResponseEntity<TaskResponseDto> createTask(@RequestBody TaskRequestDto request) {
+    public ResponseEntity<TaskResponseDto> createTask(@RequestBody @Valid TaskRequestDto request) {
         TaskResponseDto resposta = taskService.saveTask(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
     }
@@ -62,12 +64,9 @@ public class TaskController {
     }
 
     @PutMapping("/task/{id}")
-    public ResponseEntity<?> upDateTask(@PathVariable Long id, @RequestBody TaskRequestDto request) {
-        try {
-            TaskResponseDto response = taskService.upDateTask(id, request);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        }
+    public ResponseEntity<?> upDateTask(@PathVariable Long id, @Valid @RequestBody TaskRequestDto request) {
+        TaskResponseDto response = taskService.upDateTask(id, request);
+        return ResponseEntity.ok(response);
+
     }
 }

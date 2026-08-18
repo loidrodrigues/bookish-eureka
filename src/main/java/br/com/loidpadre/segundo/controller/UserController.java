@@ -17,6 +17,8 @@ import br.com.loidpadre.segundo.dto.UserRequestDto;
 import br.com.loidpadre.segundo.dto.UserResponseDto;
 import br.com.loidpadre.segundo.model.User;
 import br.com.loidpadre.segundo.service.UserService;
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
@@ -29,14 +31,9 @@ public class UserController {
     }
 
     @PostMapping("/user")
-    public ResponseEntity<?> saveUser(@RequestBody UserRequestDto requestDto) {
-        try {
-            UserResponseDto resposta = userService.saveUser(requestDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
-
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-        }
+    public ResponseEntity<?> saveUser(@RequestBody @Valid UserRequestDto requestDto) {
+        UserResponseDto resposta = userService.saveUser(requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
 
     }
 
@@ -60,13 +57,10 @@ public class UserController {
     }
 
     @PutMapping("user/{id}")
-    public ResponseEntity<?> UpdateUser(@PathVariable Long id, @RequestBody UserRequestDto request) {
-        try {
-            UserResponseDto response = userService.EditeUser(id, request);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        }
+    public ResponseEntity<?> UpdateUser(@PathVariable Long id, @Valid @RequestBody UserRequestDto request) {
+        UserResponseDto response = userService.EditeUser(id, request);
+        return ResponseEntity.ok(response);
+
     }
 
     @DeleteMapping("/user/{id}")
