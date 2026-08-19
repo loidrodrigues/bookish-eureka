@@ -1,9 +1,13 @@
 package br.com.loidpadre.segundo.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -17,6 +21,9 @@ public class User {
     private String nome;
     private String email;
     private String senha;
+
+    @OneToMany(mappedBy = "user")
+    private List<Task> task = new ArrayList<>();
 
     public User(String nome, String email, String senha) {
         this.nome = nome;
@@ -45,6 +52,10 @@ public class User {
         return this.senha;
     }
 
+    public List<Task> getTask() {
+        return this.task;
+    }
+
     // setters
 
     public void setName(String name) {
@@ -57,5 +68,9 @@ public class User {
 
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    public void setTask(List<Task> task) {
+        this.task = task;
     }
 }

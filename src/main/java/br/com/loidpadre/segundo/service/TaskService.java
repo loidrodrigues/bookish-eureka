@@ -8,13 +8,16 @@ import br.com.loidpadre.segundo.dto.TaskRequestDto;
 import br.com.loidpadre.segundo.dto.TaskResponseDto;
 import br.com.loidpadre.segundo.model.Task;
 import br.com.loidpadre.segundo.repository.TaskRepository;
+import br.com.loidpadre.segundo.repository.UserRepository;
 
 @Service
 public class TaskService {
     private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
 
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, UserRepository userRepository) {
         this.taskRepository = taskRepository;
+        this.userRepository = userRepository;
     }
 
     public List<TaskResponseDto> getTask() {

@@ -1,5 +1,7 @@
 package br.com.loidpadre.segundo.dto;
 
-public record UserResponseDto(Long id, String nome, String email) {
+import java.util.List;
+
+public record UserResponseDto(Long id, String nome, String email, List<TaskResponseDto> task) {
 
 }
