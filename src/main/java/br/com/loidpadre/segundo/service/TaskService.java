@@ -9,6 +9,7 @@ import br.com.loidpadre.segundo.dto.TaskResponseDto;
 import br.com.loidpadre.segundo.model.Task;
 import br.com.loidpadre.segundo.repository.TaskRepository;
 import br.com.loidpadre.segundo.repository.UserRepository;
+import br.com.loidpadre.segundo.model.User;
 
 @Service
 public class TaskService {
@@ -31,8 +32,13 @@ public class TaskService {
     public TaskResponseDto saveTask(TaskRequestDto request) {
         String title = request.title();
         String description = request.description();
+        Long id = request.userId();
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário nao encontrado"));
 
         Task task = new Task(title, description, false);
+        task.setUser(user);
         Task savedTask = taskRepository.save(task);
         return new TaskResponseDto(savedTask.getId(), savedTask.getTitle(), savedTask.getDescription(),
                 savedTask.getCompleted());
